@@ -50,6 +50,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          file: Dockerfile.mayhem
 
       - name: Start analysis for BMP
         uses: ForAllSecure/mcode-action@v1
