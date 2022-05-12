@@ -1,0 +1,6 @@
+project: image
+target: fuzzer_script_ico
+image: ghcr.io/aaronjsteele/image:latest
+
+cmds:
+  - cmd: /fuzzer_script_ico

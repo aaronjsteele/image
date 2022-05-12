@@ -1,0 +1,23 @@
+# Use Rust to build
+FROM rustlang/rust:nightly as builder
+
+# Add source code to the build stage.
+ADD . /image
+WORKDIR /image
+
+RUN cargo install cargo-fuzz
+
+# BUILD INSTRUCTIONS
+WORKDIR /image/fuzz
+RUN cargo +nightly fuzz build fuzzer_script_bmp && \
+    cargo +nightly fuzz build fuzzer_script_exr && \
+    cargo +nightly fuzz build fuzzer_script_ico && \
+    cargo +nightly fuzz build fuzzer_script_jpeg && \
+    cargo +nightly fuzz build fuzzer_script_webp
+# Output binaries are placed in /image/fuzz/target/x86_64-unknown-linux-gnu/release/
+
+# Package Stage -- we package for a plain Ubuntu machine
+FROM --platform=linux/amd64 ubuntu:20.04
+
+# Copy the binary from the build stage to an Ubuntu docker image
+COPY --from=builder /image/fuzz/target/x86_64-unknown-linux-gnu/release/fuzzer_script_bmp /image/fuzz/target/x86_64-unknown-linux-gnu/release/fuzzer_script_exr /image/fuzz/target/x86_64-unknown-linux-gnu/release/fuzzer_script_ico /image/fuzz/target/x86_64-unknown-linux-gnu/release/fuzzer_script_jpeg /image/fuzz/target/x86_64-unknown-linux-gnu/release/fuzzer_script_webp /
